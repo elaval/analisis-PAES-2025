@@ -34,9 +34,25 @@ Puntaje PAES Esperado = 718.06 - 240.17 × Tasa de Estudiantes Prioritarios
 ### Criterios de Clasificación
 
 **Establecimientos con Valor Agregado Excepcional**:
-- Puntaje real > 2 desviaciones estándar por sobre el esperado
-- Mínimo 5 estudiantes que rindieron PAES
-- Solo educación media de jóvenes (excluye educación adultos)
+- **Criterio estadístico**: Puntaje real > 2 desviaciones estándar por sobre el esperado
+- **Desviación estándar**: Se utiliza una desviación estándar global (única) calculada sobre todos los residuos del modelo
+- **Justificación**: Aplica un estándar uniforme de excepcionalidad para todos los establecimientos, independiente de su contexto de vulnerabilidad
+- **Filtros adicionales**: Mínimo 5 estudiantes que rindieron PAES, solo educación media de jóvenes
+
+### Detalle Metodológico: Criterio de Excepcionalidad
+
+El umbral de "2 desviaciones estándar" se calcula como:
+```
+Residuo Estandarizado = (Puntaje Real - Puntaje Esperado) / Desviación Estándar Global
+Excepcional = Residuo Estandarizado > 2.0
+```
+
+**¿Por qué desviación estándar global?**
+- **Equidad**: Mismo criterio de excepcionalidad para todos los establecimientos
+- **Robustez**: Evita sobre-ajuste por contextos específicos
+- **Interpretabilidad**: Estándar estadístico reconocido universalmente
+
+**Valor de la desviación estándar**: 45.6 puntos PAES (calculado sobre 2,942 establecimientos)
 
 ## 📈 Resultados Principales
 
