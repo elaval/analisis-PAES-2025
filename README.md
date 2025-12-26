@@ -54,6 +54,8 @@ Excepcional = Residuo Estandarizado > 2.0
 
 **Valor de la desviación estándar**: 45.6 puntos PAES (calculado sobre 2,942 establecimientos)
 
+**Interpretación práctica**: Un establecimiento es "excepcional" si supera su puntaje esperado en más de 91.2 puntos PAES (2 × 45.6).
+
 ## 📈 Resultados Principales
 
 ### Estadísticas Generales
@@ -172,10 +174,18 @@ Repositorio GitHub: https://github.com/elaval/analisis-PAES-2025
 2. Envía un **Pull Request** con mejoras
 3. Comparte feedback en [@elaval](https://twitter.com/elaval)
 
+## 🤖 Herramientas y Metodología de Desarrollo
+
+Este análisis fue desarrollado con apoyo de herramientas de inteligencia artificial:
+
+- **Amazon Q** &&  **Claude (Anthropic)**: Asistencia en desarrollo del script de análisis estadístico, validación metodológica y documentación
+
+**Nota importante**: Todas las decisiones metodológicas, interpretaciones de resultados y conclusiones fueron validadas y son responsabilidad del autor. Las herramientas de IA sirvieron como asistentes en la implementación técnica y documentación, no en el diseño conceptual del estudio.
+
 ## 📄 Licencia
 
 Este proyecto se comparte bajo licencia MIT. Los datos utilizados son de dominio público del MINEDUC.
 
 ---
 
-*"La verdadera excelencia educativa se mide no solo por dónde llegan los estudiantes, sino por cuánto avanzan desde donde partieron."*
+*"La verdadera excelencia educativa se mide no solo por dónde llegan los estudiantes, sino por cuánto avanzan desde donde partieron."*  
