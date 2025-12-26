@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Análisis Final PAES 2025 - Establecimientos Excepcionales
-Script completo que identifica establecimientos con valor agregado educativo
+Análisis Final PAES 2025 - Establecimientos con Valor Agregado Excepcional
+Script enfocado en reconocer valor agregado educativo
 """
 
 import pandas as pd
@@ -48,8 +48,8 @@ def analizar_modelo_base(df):
     
     return modelo, r2
 
-def identificar_establecimientos_excepcionales(df, modelo, top_n=50):
-    """Identifica establecimientos con valor agregado excepcional."""
+def identificar_establecimientos_con_valor_agregado(df, modelo, top_n=50):
+    """Identifica SOLO establecimientos con valor agregado excepcional."""
     
     # Calcular predicciones y residuos
     X = df['tasaPrioritariosQueRindieronPAES'].values.reshape(-1, 1)
@@ -74,18 +74,19 @@ def identificar_establecimientos_excepcionales(df, modelo, top_n=50):
     
     df_analisis['contexto_vulnerabilidad'] = df_analisis['tasaPrioritariosQueRindieronPAES'].apply(categorizar_contexto)
     
-    # Identificar establecimientos excepcionales (residuo > 2 std)
+    # Identificar SOLO establecimientos excepcionales POSITIVOS (residuo > 2 std)
     excepcionales_positivos = df_analisis[df_analisis['residuo_estandarizado'] > 2].copy()
-    excepcionales_negativos = df_analisis[df_analisis['residuo_estandarizado'] < -2].copy()
     
     # Ordenar por valor agregado
     excepcionales_positivos = excepcionales_positivos.nlargest(top_n, 'valor_agregado')
-    excepcionales_negativos = excepcionales_negativos.nsmallest(top_n, 'valor_agregado')
     
-    return excepcionales_positivos, excepcionales_negativos, df_analisis
+    # Contar establecimientos bajo esperado solo para estadísticas (no para publicar)
+    bajo_esperado_count = len(df_analisis[df_analisis['residuo_estandarizado'] < -2])
+    
+    return excepcionales_positivos, df_analisis, bajo_esperado_count
 
-def generar_reportes(excepcionales_pos, excepcionales_neg, df_analisis):
-    """Genera reportes detallados de establecimientos excepcionales."""
+def generar_reporte_constructivo(excepcionales_pos, df_analisis, bajo_esperado_count):
+    """Genera reporte SOLO de establecimientos excepcionales - enfoque constructivo."""
     
     print(f"\n" + "="*80)
     print("ESTABLECIMIENTOS CON VALOR AGREGADO EXCEPCIONAL")
@@ -113,19 +114,17 @@ def generar_reportes(excepcionales_pos, excepcionales_neg, df_analisis):
         contexto_stats.columns = ['Cantidad', 'Valor_Agregado_Promedio', 'Puntaje_Promedio', 'Tasa_Prioritarios_Promedio']
         print(contexto_stats)
     
-    # Reporte de establecimientos inferiores
-    if len(excepcionales_neg) > 0:
-        print(f"\n⚠️  TOP {len(excepcionales_neg)} ESTABLECIMIENTOS BAJO LO ESPERADO")
-        print("-" * 80)
-        
-        reporte_neg = excepcionales_neg[columnas_reporte].round(2)
-        print(reporte_neg.to_string(index=False))
+    # Mencionar estadística de bajo esperado SIN detallar establecimientos
+    print(f"\n📈 CONTEXTO ESTADÍSTICO:")
+    print(f"   • Establecimientos que superan significativamente expectativas: {len(excepcionales_pos)}")
+    print(f"   • Establecimientos bajo expectativas estadísticas: {bajo_esperado_count}")
+    print(f"   • Nota: No publicamos detalles de establecimientos bajo esperado para evitar estigmatización")
 
-def generar_archivos_salida(excepcionales_pos, excepcionales_neg, df_analisis):
-    """Genera archivos CSV con los resultados."""
+def generar_archivos_constructivos(excepcionales_pos, df_analisis):
+    """Genera SOLO archivos constructivos - SIN establecimientos bajo esperado."""
     
     print(f"\n" + "="*80)
-    print("GENERANDO ARCHIVOS DE SALIDA")
+    print("GENERANDO ARCHIVOS DE SALIDA - ENFOQUE CONSTRUCTIVO")
     print("="*80)
     
     # Archivo de establecimientos superiores
@@ -137,15 +136,9 @@ def generar_archivos_salida(excepcionales_pos, excepcionales_neg, df_analisis):
                           'residuo_estandarizado', 'contexto_vulnerabilidad']
         
         excepcionales_pos[columnas_export].to_csv(archivo_superiores, index=False)
-        print(f"✅ {archivo_superiores} - {len(excepcionales_pos)} establecimientos")
+        print(f"✅ {archivo_superiores} - {len(excepcionales_pos)} establecimientos con valor agregado excepcional")
     
-    # Archivo de establecimientos inferiores
-    if len(excepcionales_neg) > 0:
-        archivo_inferiores = "establecimientos_bajo_esperado_2025.csv"
-        excepcionales_neg[columnas_export].to_csv(archivo_inferiores, index=False)
-        print(f"✅ {archivo_inferiores} - {len(excepcionales_neg)} establecimientos")
-    
-    # Archivo completo con análisis
+    # Archivo completo con análisis (para transparencia metodológica)
     archivo_completo = "analisis_completo_paes_2025.csv"
     columnas_completo = ['RBD', 'NOM_RBD', 'COD_DEPE2', 'NOM_COM_RBD', 'promedioPAES', 
                         'estudiantesQueRindieronPAES', 'prioritariosQueRindieronPAES',
@@ -154,17 +147,22 @@ def generar_archivos_salida(excepcionales_pos, excepcionales_neg, df_analisis):
     
     df_analisis[columnas_completo].to_csv(archivo_completo, index=False)
     print(f"✅ {archivo_completo} - {len(df_analisis)} establecimientos (análisis completo)")
+    
+    print(f"\n💡 NOTA IMPORTANTE:")
+    print(f"   • Solo publicamos establecimientos con valor agregado excepcional")
+    print(f"   • El archivo completo incluye todos los análisis para transparencia metodológica")
+    print(f"   • NO generamos listas de establecimientos 'bajo esperado' para evitar estigmatización")
 
-def generar_resumen_ejecutivo(excepcionales_pos, excepcionales_neg, r2):
-    """Genera resumen ejecutivo del análisis."""
+def generar_resumen_ejecutivo_constructivo(excepcionales_pos, r2, bajo_esperado_count):
+    """Genera resumen ejecutivo con enfoque constructivo."""
     
     print(f"\n" + "="*80)
-    print("RESUMEN EJECUTIVO")
+    print("RESUMEN EJECUTIVO - ENFOQUE EN VALOR AGREGADO")
     print("="*80)
     
     print(f"📈 Modelo explica {r2*100:.1f}% de la variabilidad en puntajes PAES")
-    print(f"🏆 {len(excepcionales_pos)} establecimientos con valor agregado excepcional")
-    print(f"⚠️  {len(excepcionales_neg)} establecimientos bajo lo esperado")
+    print(f"🏆 {len(excepcionales_pos)} establecimientos con valor agregado excepcional identificados")
+    print(f"📊 {bajo_esperado_count} establecimientos bajo expectativas estadísticas (información solo para contexto)")
     
     if len(excepcionales_pos) > 0:
         # Destacar casos de alta vulnerabilidad
@@ -174,16 +172,17 @@ def generar_resumen_ejecutivo(excepcionales_pos, excepcionales_neg, r2):
             for _, row in alta_vuln.head(5).iterrows():
                 print(f"   • {row['NOM_RBD']} ({row['NOM_COM_RBD']}) - Valor agregado: {row['valor_agregado']:.1f} puntos")
     
-    print(f"\n💡 RECOMENDACIONES:")
-    print(f"   • Estudiar prácticas pedagógicas de establecimientos con valor agregado")
-    print(f"   • Implementar programas de apoyo en establecimientos bajo lo esperado")
-    print(f"   • Reconocer públicamente establecimientos excepcionales en contextos vulnerables")
+    print(f"\n💡 RECOMENDACIONES CONSTRUCTIVAS:")
+    print(f"   • Estudiar y replicar prácticas pedagógicas de establecimientos con alto valor agregado")
+    print(f"   • Crear programas de mentoría entre establecimientos excepcionales y otros")
+    print(f"   • Desarrollar reconocimientos oficiales basados en valor agregado contextualizado")
+    print(f"   • Enfocar recursos en apoyar (no penalizar) establecimientos que requieren mayor apoyo")
 
 def main():
-    """Función principal que ejecuta el análisis completo."""
+    """Función principal que ejecuta el análisis con enfoque constructivo."""
     
-    print("ANÁLISIS FINAL PAES 2025 - ESTABLECIMIENTOS EXCEPCIONALES")
-    print("="*80)
+    print("ANÁLISIS PAES 2025 - VALOR AGREGADO EDUCATIVO (ENFOQUE CONSTRUCTIVO)")
+    print("="*90)
     
     # 1. Cargar y limpiar datos
     archivo_csv = "datos_PAES2025_prioritarios.csv"
@@ -192,21 +191,24 @@ def main():
     # 2. Análisis de modelo base
     modelo, r2 = analizar_modelo_base(df)
     
-    # 3. Identificar establecimientos excepcionales
-    excepcionales_pos, excepcionales_neg, df_analisis = identificar_establecimientos_excepcionales(df, modelo)
+    # 3. Identificar SOLO establecimientos con valor agregado excepcional
+    excepcionales_pos, df_analisis, bajo_esperado_count = identificar_establecimientos_con_valor_agregado(df, modelo)
     
-    # 4. Generar reportes
-    generar_reportes(excepcionales_pos, excepcionales_neg, df_analisis)
+    # 4. Generar reporte constructivo
+    generar_reporte_constructivo(excepcionales_pos, df_analisis, bajo_esperado_count)
     
-    # 5. Generar archivos de salida
-    generar_archivos_salida(excepcionales_pos, excepcionales_neg, df_analisis)
+    # 5. Generar archivos constructivos
+    generar_archivos_constructivos(excepcionales_pos, df_analisis)
     
-    # 6. Resumen ejecutivo
-    generar_resumen_ejecutivo(excepcionales_pos, excepcionales_neg, r2)
+    # 6. Resumen ejecutivo constructivo
+    generar_resumen_ejecutivo_constructivo(excepcionales_pos, r2, bajo_esperado_count)
     
-    print(f"\n" + "="*80)
-    print("ANÁLISIS COMPLETADO EXITOSAMENTE")
-    print("="*80)
+    print(f"\n" + "="*90)
+    print("ANÁLISIS COMPLETADO - ENFOQUE CONSTRUCTIVO EXITOSO")
+    print("="*90)
+    print(f"📁 Archivos generados:")
+    print(f"   • establecimientos_valor_agregado_superior_2025.csv")
+    print(f"   • analisis_completo_paes_2025.csv")
 
 if __name__ == "__main__":
     main()
